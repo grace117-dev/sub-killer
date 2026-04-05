@@ -34,4 +34,151 @@
         .deadline-soon { color: #E62117; font-weight: bold; text-shadow: 0 0 5px rgba(230, 33, 23, 0.8); }
         
         /* 霓虹紅按鈕 */
-        .btn-st { background-color: #000; border: 2px solid #E62117; color: #E62117; font-family: 'Russo One', sans-serif; text-transform: uppercase; transition: all 0.2s; box-shadow: 0 0 5px rgba
+        .btn-st { background-color: #000; border: 2px solid #E62117; color: #E62117; font-family: 'Russo One', sans-serif; text-transform: uppercase; transition: all 0.2s; box-shadow: 0 0 5px rgba(230, 33, 23, 0.4); }
+        .btn-st:hover { background-color: #E62117; color: #000; box-shadow: 0 0 20px rgba(230, 33, 23, 0.8); }
+        .btn-st:active { transform: scale(0.95); }
+
+        /* 輸入框樣式 */
+        input { font-family: 'Lora', serif; background-color: #0a0a0a !important; border: 1px solid #444 !important; color: #E0E0E0 !important; }
+        input:focus { border-color: #E62117 !important; outline: none !important; box-shadow: 0 0 10px rgba(230, 33, 23, 0.3) !important; }
+        input::placeholder { color: #666; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-md mx-auto">
+        <header class="text-center mb-10 pt-5">
+            <h1 class="text-5xl st-title mb-1">訂閱退散</h1>
+            <p class="text-gray-600 text-xs tracking-widest font-body">THE SUBSCRIPTION EXORCIST - CHAPTER TWO</p>
+            <div class="w-24 h-1 bg-stRed mx-auto mt-3 shadow-lg"></div>
+        </header>
+
+        <div class="card rounded-none p-6 mb-8 text-center border-stRed">
+            <p class="text-xs text-gray-400 uppercase tracking-widest font-title">每月有效供奉</p>
+            <h2 id="total-cost" class="text-6xl font-title my-3 text-white tracking-tight">$ 0</h2>
+            <p id="roast-summary" class="text-sm roast-text">正在掃描顛倒世界的財務裂縫...</p>
+        </div>
+
+        <div class="card rounded-none p-5 mb-10 border-stGray">
+            <h3 class="text-lg font-title mb-5 text-stWhite text-center tracking-wider">➕ 紀錄新的扣款陷阱</h3>
+            <div class="space-y-4">
+                <input id="sub-name" type="text" placeholder="服務名稱 (如: Netflix)" class="w-full p-3 rounded-none text-base">
+                <div class="flex gap-3">
+                    <input id="sub-price" type="number" placeholder="金額 (TWD)" class="w-1/2 p-3 rounded-none text-base">
+                    <input id="sub-day" type="number" min="1" max="31" placeholder="扣款日 (1-31)" class="w-1/2 p-3 rounded-none text-base">
+                </div>
+                <button onclick="addSubscription()" class="w-full btn-st py-4 rounded-none text-lg tracking-widest">
+                    承認我是盤子並儲存
+                </button>
+            </div>
+        </div>
+
+        <div id="sub-list" class="space-y-5 pb-20">
+            </div>
+    </div>
+
+    <script>
+        // 核心邏輯 (與上版相同，僅微調 CSS 類名)
+        let subs = JSON.parse(localStorage.getItem('my_subscriptions_v2')) || [];
+
+        function addSubscription() {
+            const name = document.getElementById('sub-name').value.trim();
+            const price = parseFloat(document.getElementById('sub-price').value);
+            const day = parseInt(document.getElementById('sub-day').value);
+
+            if (!name || isNaN(price) || isNaN(day) || day < 1 || day > 31) {
+                alert("錯誤。請填寫正確的名稱、金額與扣款日 (1-31)。");
+                return;
+            }
+
+            subs.push({
+                id: Date.now(),
+                name,
+                price,
+                day,
+                active: true,
+                roast: "偵測到來自顛倒世界的自動扣款。"
+            });
+
+            saveAndRender();
+            document.getElementById('sub-name').value = '';
+            document.getElementById('sub-price').value = '';
+            document.getElementById('sub-day').value = '';
+        }
+
+        function toggleStatus(id) {
+            const sub = subs.find(s => s.id === id);
+            sub.active = !sub.active;
+            saveAndRender();
+        }
+
+        function removeSub(id) {
+            if(confirm("確定要將這筆紀錄驅逐回顛倒世界嗎？")) {
+                subs = subs.filter(s => s.id !== id);
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('my_subscriptions_v2', JSON.stringify(subs));
+            render();
+        }
+
+        function getDaysUntil(payDay) {
+            const now = new Date();
+            const today = now.getDate();
+            const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            const targetDay = Math.min(payDay, lastDayOfMonth);
+
+            if (today <= targetDay) return targetDay - today;
+            else return (lastDayOfMonth - today) + targetDay;
+        }
+
+        function render() {
+            const listEl = document.getElementById('sub-list');
+            const totalEl = document.getElementById('total-cost');
+            const summaryEl = document.getElementById('roast-summary');
+            
+            listEl.innerHTML = '';
+            let total = 0;
+
+            subs.sort((a, b) => getDaysUntil(a.day) - getDaysUntil(b.day)).forEach(sub => {
+                if (sub.active) total += sub.price;
+                const daysLeft = getDaysUntil(sub.day);
+                const isSoon = daysLeft <= 3;
+
+                listEl.innerHTML += `
+                    <div class="card rounded-none p-5 relative ${sub.active ? '' : 'inactive'}">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="text-stWhite font-bold text-xl font-body">${sub.name}</span>
+                                <div class="text-xs ${isSoon ? 'deadline-soon' : 'text-gray-500'} font-body mt-1">
+                                    ${sub.active ? `📅 每月 ${sub.day} 日扣款 (剩 ${daysLeft} 天)` : '🚫 已切斷傳輸'}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-title text-white">$${sub.price.toLocaleString()}</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-stGray">
+                            <button onclick="toggleStatus(${sub.id})" class="text-xs border border-stRed text-stRed px-3 py-1 hover:bg-stRed hover:text-black font-body">
+                                ${sub.active ? '切換為已退訂' : '重啟供奉'}
+                            </button>
+                            <p class="roast-text font-body">${sub.active ? '續訂中' : '已停止'}</p>
+                        </div>
+                        <button onclick="removeSub(${sub.id})" class="absolute -top-2 -right-2 bg-stRed text-black w-6 h-6 rounded-none text-xs font-title hover:bg-white">✕</button>
+                    </div>`;
+            });
+
+            totalEl.innerText = `$ ${total.toLocaleString()}`;
+            
+            // 毒舌文案更新為怪奇物語風格
+            if (total > 3000) summaryEl.innerText = "奪心魔正在吸乾你的錢包。快切斷連結！";
+            else if (total > 1500) summaryEl.innerText = "警報。財務裂縫正在擴大。";
+            else if (total > 0) summaryEl.innerText = "小額扣款正在傳輸中，尚在控制範圍。";
+            else summaryEl.innerText = "目前帳面乾淨，顛倒世界暫時安全。";
+        }
+
+        render();
+    </script>
+</body>
+</html>
