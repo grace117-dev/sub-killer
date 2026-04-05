@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>訂閱退散 - 最終修正版</title>
+    <title>訂閱退散 - 臨戰警告版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
         
         :root {
             --stranger-red: #ff0512;
-            --deep-red: #a30000;
-            --warning-orange: #ffc400;
+            --alert-bg: #450a0a;
         }
 
         body { 
@@ -33,9 +32,23 @@
             border: 1px solid #333;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             border-radius: 12px;
+            transition: all 0.3s ease;
         }
 
-        /* 輸入框加強 */
+        /* ⚠️ 臨近扣款日的警告樣式 */
+        .urgent-card {
+            background: var(--alert-bg) !important;
+            border: 2px solid var(--stranger-red) !important;
+            box-shadow: 0 0 20px rgba(255, 5, 18, 0.4);
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: #ff0512; }
+            50% { border-color: #800000; }
+            100% { border-color: #ff0512; }
+        }
+
         input, select {
             background: #1a1a1a !important;
             border: 2px solid #333 !important;
@@ -47,9 +60,7 @@
             outline: none;
         }
 
-        input:focus {
-            border-color: var(--stranger-red) !important;
-        }
+        input:focus { border-color: var(--stranger-red) !important; }
 
         .label-text {
             font-size: 1rem;
@@ -65,14 +76,10 @@
             font-size: 1.2rem;
             padding: 1.2rem;
             border-radius: 8px;
-            transition: 0.3s;
             width: 100%;
             color: white;
         }
 
-        .btn-exorcise:active { transform: scale(0.98); }
-
-        /* 列表內的數字與文字 */
         .sub-name { font-size: 1.5rem; font-weight: 900; font-style: italic; }
         .sub-price { font-size: 2rem; font-weight: 900; font-variant-numeric: tabular-nums; }
     </style>
@@ -101,9 +108,9 @@
         </div>
 
         <!-- 儲存警告 -->
-        <div class="mb-8 p-5 border-2 border-dashed border-yellow-600 bg-yellow-900/20 rounded-lg">
-            <p class="text-sm text-yellow-500 font-black mb-1">⚠️ 重要：資料僅儲存在此裝置</p>
-            <p class="text-sm text-gray-300">清除瀏覽器快取或更換裝置，紀錄會全部遺失。</p>
+        <div class="mb-8 p-5 border-2 border-dashed border-yellow-600 bg-yellow-900/20 rounded-lg text-sm text-gray-300">
+            <p class="text-yellow-500 font-black mb-1">⚠️ 重要：資料僅儲存在此瀏覽器</p>
+            清除快取或更換裝置，紀錄會消失。
         </div>
 
         <!-- 輸入表單 -->
@@ -113,7 +120,6 @@
                     <label class="label-text">服務名稱</label>
                     <input id="sub-name" type="text" placeholder="例如：Netflix">
                 </div>
-                
                 <div class="flex gap-4">
                     <div class="flex-1">
                         <label class="label-text">金額</label>
@@ -128,13 +134,11 @@
                         </select>
                     </div>
                 </div>
-
                 <div>
                     <label class="label-text text-red-400 font-black">📅 設定下次扣款日期</label>
                     <input id="sub-date" type="date">
                 </div>
-
-                <button onclick="addSubscription()" class="btn-exorcise">承認我是盤子並記錄</button>
+                <button onclick="addSubscription()" class="btn-exorcise hover:brightness-110 transition">承認我是盤子並記錄</button>
             </div>
         </div>
 
@@ -155,19 +159,14 @@
     <script>
         let subs = JSON.parse(localStorage.getItem('my_subscriptions')) || [];
 
-        window.onload = () => {
-            render();
-            checkWarnings();
-        };
+        window.onload = () => { render(); checkWarnings(); };
 
         function addSubscription() {
             const name = document.getElementById('sub-name').value;
             const price = parseFloat(document.getElementById('sub-price').value);
             const cycle = parseInt(document.getElementById('sub-cycle').value);
             const date = document.getElementById('sub-date').value;
-
             if (!name || isNaN(price) || !date) return alert("請填寫完整！");
-
             subs.push({ id: Date.now(), name, price, cycle, date });
             saveAndRender();
             document.getElementById('sub-name').value = '';
@@ -180,12 +179,12 @@
         }
 
         function checkWarnings() {
-            const today = new Date();
+            const today = new Date().setHours(0,0,0,0);
             const limit = new Date();
-            limit.setDate(today.getDate() + 3);
+            limit.setDate(new Date().getDate() + 3);
             let warnings = subs.filter(s => {
-                const d = new Date(s.date);
-                return d >= today && d <= limit;
+                const d = new Date(s.date).setHours(0,0,0,0);
+                return d >= today && d <= limit.setHours(23,59,59,999);
             });
             if (warnings.length > 0) {
                 document.getElementById('alert-modal').classList.remove('hidden');
@@ -206,34 +205,42 @@
         function render() {
             const listEl = document.getElementById('sub-list');
             let mTotal = 0;
+            const today = new Date().setHours(0,0,0,0);
+            const threeDaysLater = new Date();
+            threeDaysLater.setDate(new Date().getDate() + 3);
+
             subs.sort((a,b) => new Date(a.date) - new Date(b.date));
             listEl.innerHTML = '';
 
             subs.forEach(s => {
                 const mPrice = s.price / s.cycle;
                 mTotal += mPrice;
+                
+                // 計算是否為緊急狀態 (3天內)
+                const subDate = new Date(s.date).setHours(0,0,0,0);
+                const isUrgent = subDate >= today && subDate <= threeDaysLater.setHours(23,59,59,999);
+                const isExpired = subDate < today;
+
                 const cycleText = s.cycle === 12 ? '年度' : (s.cycle === 3 ? '每季' : '每月');
 
-                // 重新設計卡片內部的 Flex 結構
                 listEl.innerHTML += `
-                    <div class="neon-card p-6 border-t-2 border-t-gray-800">
+                    <div class="neon-card p-6 ${isUrgent ? 'urgent-card' : ''} ${isExpired ? 'opacity-50' : ''}">
                         <div class="flex flex-col gap-4">
-                            <!-- 第一行：名稱與金額 -->
                             <div class="flex justify-between items-start">
                                 <div class="max-w-[60%]">
                                     <h4 class="sub-name truncate uppercase">${s.name}</h4>
-                                    <span class="text-xs bg-red-900/50 text-red-200 font-bold px-2 py-1 rounded inline-block mt-2">${cycleText}訂閱</span>
+                                    <span class="text-xs ${isUrgent ? 'bg-red-600' : 'bg-red-900/50'} text-white font-bold px-2 py-1 rounded inline-block mt-2">${cycleText}訂閱</span>
                                 </div>
                                 <div class="text-right">
                                     <p class="sub-price">$${s.price.toLocaleString()}</p>
-                                    <p class="text-xs text-gray-400 font-bold mt-1">扣款日: ${s.date}</p>
+                                    <p class="text-xs ${isUrgent ? 'text-white' : 'text-gray-400'} font-bold mt-1">扣款日: ${s.date}</p>
                                 </div>
                             </div>
-
-                            <!-- 第二行：按鈕與換算（分開排列避免擠壓） -->
                             <div class="flex justify-between items-end border-t border-gray-800 pt-4 mt-2">
-                                <span class="text-xs text-gray-500 font-bold">月平均:$${Math.round(mPrice)}</span>
-                                <button onclick="removeSub(${s.id})" class="text-sm font-bold text-gray-500 hover:text-red-500 underline">
+                                <span class="text-xs ${isUrgent ? 'text-red-200 animate-pulse' : 'text-gray-500'} font-bold">
+                                    ${isUrgent ? '⚠️ 扣款臨近！請注意資金流向' : '月平均:$'+Math.round(mPrice)}
+                                </span>
+                                <button onclick="removeSub(${s.id})" class="text-sm font-bold ${isUrgent ? 'text-white underline' : 'text-gray-500 hover:text-red-500 underline'}">
                                     刪除項目
                                 </button>
                             </div>
