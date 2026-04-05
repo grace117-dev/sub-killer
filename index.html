@@ -2,15 +2,117 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>訂閱退散測試</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂閱退散 - 你的錢包守護者</title>
+    <!-- 直接引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #050505; color: #39FF14; min-height: 100vh; }
+        .card { background: #111; border: 1px solid #333; transition: all 0.3s; }
+        .roast-text { color: #FF3131; font-style: italic; }
+    </style>
 </head>
-<body style="background:#000; color:#39FF14; font-family:sans-serif; text-align:center; padding:50px;">
-    <h1>💸 訂閱退散 (運作中)</h1>
-    <div style="border:2px solid #39FF14; padding:20px; border-radius:15px; display:inline-block;">
-        <input id="n" type="text" placeholder="服務名稱">
-        <input id="p" type="number" placeholder="金額">
-        <button onclick="alert('恭喜你！App 正式動起來了！')" style="background:#39FF14; color:#000; border:none; padding:10px 20px; font-weight:bold; cursor:pointer;">存檔</button>
+<body class="p-4 md:p-8">
+    <div class="max-w-md mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">💸 訂閱退散</h1>
+            <p class="text-gray-500 text-sm">數據儲存於本地瀏覽器，隱私安全</p>
+        </header>
+
+        <!-- 統計區塊 -->
+        <div class="card rounded-xl p-6 mb-8 text-center">
+            <p class="text-xs text-gray-400 uppercase tracking-widest">每月血汗錢總計</p>
+            <h2 id="total-cost" class="text-5xl font-bold my-2 text-white">$ 0</h2>
+            <p id="roast-summary" class="text-sm roast-text">正在掃描你的財務漏洞...</p>
+        </div>
+
+        <!-- 輸入區塊 -->
+        <div class="card rounded-xl p-4 mb-8">
+            <h3 class="text-lg font-bold mb-4 text-white text-center">➕ 增加新的供奉項目</h3>
+            <div class="space-y-3">
+                <input id="sub-name" type="text" placeholder="服務名稱 (如: Netflix)" class="w-full bg-black border border-gray-700 p-2 rounded focus:border-green-500 outline-none text-white text-base">
+                <input id="sub-price" type="number" placeholder="每月金額 (TWD)" class="w-full bg-black border border-gray-700 p-2 rounded focus:border-green-500 outline-none text-white text-base">
+                <button onclick="addSubscription()" class="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-3 rounded transition active:scale-95">
+                    承認我是盤子並儲存
+                </button>
+            </div>
+        </div>
+
+        <!-- 列表區塊 -->
+        <div id="sub-list" class="space-y-4 pb-20">
+            <!-- 這裡會由 JS 動態產生 -->
+        </div>
     </div>
-    <p style="color:#666; margin-top:20px;">如果你看到這個畫面，代表 GitHub Pages 終於睡醒了。</p>
+
+    <script>
+        // 核心邏輯
+        let subs = [];
+        try {
+            const saved = localStorage.getItem('my_subscriptions');
+            subs = saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            console.error("讀取失敗", e);
+            subs = [];
+        }
+
+        const roasts = ["這筆錢夠買 3 份排骨飯了！", "偵測到盤子行為，感謝貢獻。", "上次打開它是什麼時候？", "這筆扣款讓你離財富自由又遠了。", "你家沙發是鑲金的嗎？", "這是在買心理安慰吧？", "30元App你嫌貴，這個你付得很爽？"];
+
+        function addSubscription() {
+            const nameEl = document.getElementById('sub-name');
+            const priceEl = document.getElementById('sub-price');
+            const name = nameEl.value.trim();
+            const price = parseFloat(priceEl.value);
+
+            if (!name || isNaN(price)) {
+                alert("欄位填好，別想逃避！");
+                return;
+            }
+
+            const roast = roasts[Math.floor(Math.random() * roasts.length)];
+            subs.push({ id: Date.now(), name, price, roast });
+            
+            localStorage.setItem('my_subscriptions', JSON.stringify(subs));
+            nameEl.value = '';
+            priceEl.value = '';
+            render();
+        }
+
+        function removeSub(id) {
+            if(confirm("確定要取消供奉？")) {
+                subs = subs.filter(s => s.id !== id);
+                localStorage.setItem('my_subscriptions', JSON.stringify(subs));
+                render();
+            }
+        }
+
+        function render() {
+            const listEl = document.getElementById('sub-list');
+            const totalEl = document.getElementById('total-cost');
+            const summaryEl = document.getElementById('roast-summary');
+            
+            listEl.innerHTML = '';
+            let total = 0;
+
+            subs.forEach(sub => {
+                total += sub.price;
+                listEl.innerHTML += `
+                    <div class="card rounded-xl p-4 relative">
+                        <button onclick="removeSub(${sub.id})" class="absolute top-2 right-2 text-gray-600 p-2">✕</button>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-white font-bold text-lg">${sub.name}</span>
+                            <span class="text-xl font-mono">$${sub.price}</span>
+                        </div>
+                        <p class="text-xs roast-text">💬 ${sub.roast}</p>
+                    </div>`;
+            });
+
+            totalEl.innerText = `$ ${total.toLocaleString()}`;
+            summaryEl.innerText = total === 0 ? "目前帳面乾淨。" : (total > 1500 ? "錢包正在噴血！" : "小傷口還能救。");
+        }
+
+        // 初始執行一次
+        render();
+    </script>
 </body>
 </html>
