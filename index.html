@@ -3,81 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>訂閱退散 - THE SUBSCRIPTION EXORCIST</title>
+    <title>THE EXORCIST | 訂閱退散 Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Lora:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+TC:wght@300;500;700&family=Russo+One&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        stBlack: '#000000',
-                        stRed: '#E62117', // 怪奇物語霓虹紅
-                        stWhite: '#E0E0E0', // 復古米白
-                        stGray: '#333333',
+                        deepBlack: '#0a0a0a',
+                        stRed: '#b91c1c',
+                        glassWhite: 'rgba(255, 255, 255, 0.05)',
                     },
                     fontFamily: {
-                        title: ['Russo One', 'sans-serif'],
-                        body: ['Lora', 'serif'],
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                        display: ['Russo One', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
-        body { background-color: #000000; color: #E0E0E0; font-family: 'Lora', serif; background-image: radial-gradient(#1a1a1a 1px, transparent 1px); background-size: 20px 20px; }
-        .st-title { font-family: 'Russo One', sans-serif; text-transform: uppercase; letter-spacing: 1px; color: #E62117; text-shadow: 0 0 10px rgba(230, 33, 23, 0.7); }
-        .card { background: rgba(10, 10, 10, 0.9); border: 2px solid #333333; transition: all 0.3s; box-shadow: 3px 3px 0px #1a1a1a; }
-        .card:hover { border-color: #E62117; box-shadow: 0 0 15px rgba(230, 33, 23, 0.5); }
-        .inactive { opacity: 0.3; filter: grayscale(1); border-style: dashed; }
-        .roast-text { color: #888888; font-style: italic; font-size: 0.8rem; }
-        .deadline-soon { color: #E62117; font-weight: bold; text-shadow: 0 0 5px rgba(230, 33, 23, 0.8); }
-        
-        /* 霓虹紅按鈕 */
-        .btn-st { background-color: #000; border: 2px solid #E62117; color: #E62117; font-family: 'Russo One', sans-serif; text-transform: uppercase; transition: all 0.2s; box-shadow: 0 0 5px rgba(230, 33, 23, 0.4); }
-        .btn-st:hover { background-color: #E62117; color: #000; box-shadow: 0 0 20px rgba(230, 33, 23, 0.8); }
-        .btn-st:active { transform: scale(0.95); }
-
-        /* 輸入框樣式 */
-        input { font-family: 'Lora', serif; background-color: #0a0a0a !important; border: 1px solid #444 !important; color: #E0E0E0 !important; }
-        input:focus { border-color: #E62117 !important; outline: none !important; box-shadow: 0 0 10px rgba(230, 33, 23, 0.3) !important; }
-        input::placeholder { color: #666; }
+        body { 
+            background-color: #000; 
+            background-image: 
+                radial-gradient(circle at 50% -20%, #350000 0%, #000 80%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass-card {
+            background: rgba(20, 20, 20, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .st-accent {
+            color: #b91c1c;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 15px rgba(185, 28, 28, 0.4);
+        }
+        .progress-bg { background: rgba(255, 255, 255, 0.1); height: 3px; border-radius: 2px; overflow: hidden; }
+        .progress-fill { background: #b91c1c; height: 100%; transition: width 1s ease-out; }
+        .btn-premium {
+            background: #b91c1c;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.1em;
+        }
+        .btn-premium:hover {
+            background: #ef4444;
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(185, 28, 28, 0.5);
+        }
+        input {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.3s !important;
+        }
+        input:focus {
+            border-color: #b91c1c !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-md mx-auto">
-        <header class="text-center mb-10 pt-5">
-            <h1 class="text-5xl st-title mb-1">訂閱退散</h1>
-            <p class="text-gray-600 text-xs tracking-widest font-body">THE SUBSCRIPTION EXORCIST - CHAPTER TWO</p>
-            <div class="w-24 h-1 bg-stRed mx-auto mt-3 shadow-lg"></div>
+<body class="p-6 md:p-12 min-h-screen">
+    <div class="max-w-lg mx-auto">
+        <header class="mb-12 text-center">
+            <h1 class="text-xs st-accent font-semibold mb-2">FINANCIAL EXORCIST SYSTEM</h1>
+            <h2 class="text-4xl font-display tracking-tighter">訂閱退散 <span class="text-stRed">PRO</span></h2>
+            <div class="h-[1px] w-12 bg-stRed mx-auto mt-4"></div>
         </header>
 
-        <div class="card rounded-none p-6 mb-8 text-center border-stRed">
-            <p class="text-xs text-gray-400 uppercase tracking-widest font-title">每月有效供奉</p>
-            <h2 id="total-cost" class="text-6xl font-title my-3 text-white tracking-tight">$ 0</h2>
-            <p id="roast-summary" class="text-sm roast-text">正在掃描顛倒世界的財務裂縫...</p>
+        <!-- 總計儀表板 -->
+        <div class="glass-card rounded-2xl p-8 mb-10 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stRed to-transparent opacity-50"></div>
+            <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] mb-2 font-medium">Monthly Outflow / 每月支出</p>
+            <h3 id="total-cost" class="text-6xl font-light tracking-tighter mb-4">$ 0</h3>
+            <p id="roast-summary" class="text-xs text-gray-400 italic font-light tracking-wide"></p>
         </div>
 
-        <div class="card rounded-none p-5 mb-10 border-stGray">
-            <h3 class="text-lg font-title mb-5 text-stWhite text-center tracking-wider">➕ 紀錄新的扣款陷阱</h3>
-            <div class="space-y-4">
-                <input id="sub-name" type="text" placeholder="服務名稱 (如: Netflix)" class="w-full p-3 rounded-none text-base">
-                <div class="flex gap-3">
-                    <input id="sub-price" type="number" placeholder="金額 (TWD)" class="w-1/2 p-3 rounded-none text-base">
-                    <input id="sub-day" type="number" min="1" max="31" placeholder="扣款日 (1-31)" class="w-1/2 p-3 rounded-none text-base">
+        <!-- 輸入面板 -->
+        <div class="glass-card rounded-2xl p-6 mb-12">
+            <div class="grid grid-cols-1 gap-4">
+                <input id="sub-name" type="text" placeholder="服務名稱" class="w-full p-4 rounded-xl text-sm outline-none">
+                <div class="flex gap-4">
+                    <input id="sub-price" type="number" placeholder="金額 (TWD)" class="w-1/2 p-4 rounded-xl text-sm outline-none">
+                    <input id="sub-day" type="number" min="1" max="31" placeholder="扣款日" class="w-1/2 p-4 rounded-xl text-sm outline-none">
                 </div>
-                <button onclick="addSubscription()" class="w-full btn-st py-4 rounded-none text-lg tracking-widest">
-                    承認我是盤子並儲存
+                <button onclick="addSubscription()" class="btn-premium w-full py-4 rounded-xl font-bold text-sm text-white">
+                    CONFIRM SUBSCRIPTION
                 </button>
             </div>
         </div>
 
-        <div id="sub-list" class="space-y-5 pb-20">
-            </div>
+        <!-- 列表清單 -->
+        <div id="sub-list" class="space-y-6 pb-24"></div>
     </div>
 
     <script>
-        // 核心邏輯 (與上版相同，僅微調 CSS 類名)
         let subs = JSON.parse(localStorage.getItem('my_subscriptions_v2')) || [];
 
         function addSubscription() {
@@ -86,23 +111,12 @@
             const day = parseInt(document.getElementById('sub-day').value);
 
             if (!name || isNaN(price) || isNaN(day) || day < 1 || day > 31) {
-                alert("錯誤。請填寫正確的名稱、金額與扣款日 (1-31)。");
-                return;
+                alert("資料輸入不完整或錯誤。"); return;
             }
 
-            subs.push({
-                id: Date.now(),
-                name,
-                price,
-                day,
-                active: true,
-                roast: "偵測到來自顛倒世界的自動扣款。"
-            });
-
+            subs.push({ id: Date.now(), name, price, day, active: true });
             saveAndRender();
-            document.getElementById('sub-name').value = '';
-            document.getElementById('sub-price').value = '';
-            document.getElementById('sub-day').value = '';
+            document.querySelectorAll('input').forEach(i => i.value = '');
         }
 
         function toggleStatus(id) {
@@ -112,7 +126,7 @@
         }
 
         function removeSub(id) {
-            if(confirm("確定要將這筆紀錄驅逐回顛倒世界嗎？")) {
+            if(confirm("確定刪除此項監控？")) {
                 subs = subs.filter(s => s.id !== id);
                 saveAndRender();
             }
@@ -128,56 +142,53 @@
             const today = now.getDate();
             const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
             const targetDay = Math.min(payDay, lastDayOfMonth);
-
-            if (today <= targetDay) return targetDay - today;
-            else return (lastDayOfMonth - today) + targetDay;
+            return today <= targetDay ? targetDay - today : (lastDayOfMonth - today) + targetDay;
         }
 
         function render() {
             const listEl = document.getElementById('sub-list');
             const totalEl = document.getElementById('total-cost');
             const summaryEl = document.getElementById('roast-summary');
-            
-            listEl.innerHTML = '';
-            let total = 0;
+            listEl.innerHTML = ''; let total = 0;
 
             subs.sort((a, b) => getDaysUntil(a.day) - getDaysUntil(b.day)).forEach(sub => {
                 if (sub.active) total += sub.price;
                 const daysLeft = getDaysUntil(sub.day);
+                const progress = ((30 - daysLeft) / 30) * 100;
                 const isSoon = daysLeft <= 3;
 
                 listEl.innerHTML += `
-                    <div class="card rounded-none p-5 relative ${sub.active ? '' : 'inactive'}">
-                        <div class="flex justify-between items-start mb-3">
-                            <div>
-                                <span class="text-stWhite font-bold text-xl font-body">${sub.name}</span>
-                                <div class="text-xs ${isSoon ? 'deadline-soon' : 'text-gray-500'} font-body mt-1">
-                                    ${sub.active ? `📅 每月 ${sub.day} 日扣款 (剩 ${daysLeft} 天)` : '🚫 已切斷傳輸'}
+                    <div class="relative group">
+                        <div class="glass-card rounded-2xl p-6 transition-all duration-500 ${sub.active ? 'border-l-4 border-l-stRed' : 'opacity-40 grayscale'}">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-white tracking-tight">${sub.name}</h4>
+                                    <p class="text-[10px] ${isSoon ? 'text-stRed font-bold' : 'text-gray-500'} uppercase tracking-widest mt-1">
+                                        ${sub.active ? `Next Charge: In ${daysLeft} Days` : 'Subscription Paused'}
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-2xl font-light tracking-tighter">$${sub.price.toLocaleString()}</span>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <div class="text-2xl font-title text-white">$${sub.price.toLocaleString()}</div>
+                            
+                            <div class="progress-bg mb-4">
+                                <div class="progress-fill" style="width: ${sub.active ? progress : 0}%"></div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <button onclick="toggleStatus(${sub.id})" class="text-[10px] text-gray-400 hover:text-white transition tracking-widest uppercase">
+                                    [ ${sub.active ? 'Disable' : 'Enable'} ]
+                                </button>
+                                <button onclick="removeSub(${sub.id})" class="text-[10px] text-gray-600 hover:text-stRed transition uppercase">Remove</button>
                             </div>
                         </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-stGray">
-                            <button onclick="toggleStatus(${sub.id})" class="text-xs border border-stRed text-stRed px-3 py-1 hover:bg-stRed hover:text-black font-body">
-                                ${sub.active ? '切換為已退訂' : '重啟供奉'}
-                            </button>
-                            <p class="roast-text font-body">${sub.active ? '續訂中' : '已停止'}</p>
-                        </div>
-                        <button onclick="removeSub(${sub.id})" class="absolute -top-2 -right-2 bg-stRed text-black w-6 h-6 rounded-none text-xs font-title hover:bg-white">✕</button>
                     </div>`;
             });
 
             totalEl.innerText = `$ ${total.toLocaleString()}`;
-            
-            // 毒舌文案更新為怪奇物語風格
-            if (total > 3000) summaryEl.innerText = "奪心魔正在吸乾你的錢包。快切斷連結！";
-            else if (total > 1500) summaryEl.innerText = "警報。財務裂縫正在擴大。";
-            else if (total > 0) summaryEl.innerText = "小額扣款正在傳輸中，尚在控制範圍。";
-            else summaryEl.innerText = "目前帳面乾淨，顛倒世界暫時安全。";
+            summaryEl.innerText = total > 2000 ? "DETECTED: SEVERE WALLET HEMORRHAGE." : "STATUS: NORMAL FINANCE LEVELS.";
         }
-
         render();
     </script>
 </body>
