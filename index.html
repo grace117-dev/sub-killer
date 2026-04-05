@@ -3,193 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EXORCIST | 訂閱退散 Pro</title>
+    <title>訂閱退散 - 專業守護版</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+TC:wght@300;500;700&family=Russo+One&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        deepBlack: '#0a0a0a',
-                        stRed: '#b91c1c',
-                        glassWhite: 'rgba(255, 255, 255, 0.05)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
-                        display: ['Russo One', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { 
-            background-color: #000; 
-            background-image: 
-                radial-gradient(circle at 50% -20%, #350000 0%, #000 80%),
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 30px 30px, 30px 30px;
-            color: #fff;
-            -webkit-font-smoothing: antialiased;
-        }
-        .glass-card {
-            background: rgba(20, 20, 20, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-        }
-        .st-accent {
-            color: #b91c1c;
-            letter-spacing: 0.2em;
-            text-shadow: 0 0 15px rgba(185, 28, 28, 0.4);
-        }
-        .progress-bg { background: rgba(255, 255, 255, 0.1); height: 3px; border-radius: 2px; overflow: hidden; }
-        .progress-fill { background: #b91c1c; height: 100%; transition: width 1s ease-out; }
-        .btn-premium {
-            background: #b91c1c;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 0.1em;
-        }
-        .btn-premium:hover {
-            background: #ef4444;
-            transform: translateY(-1px);
-            box-shadow: 0 0 20px rgba(185, 28, 28, 0.5);
-        }
-        input {
-            background: rgba(255, 255, 255, 0.05) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            transition: all 0.3s !important;
-        }
-        input:focus {
-            border-color: #b91c1c !important;
-            background: rgba(255, 255, 255, 0.08) !important;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #050505; color: #39FF14; min-height: 100vh; }
+        .card { background: #111; border: 1px solid #333; transition: all 0.3s; }
+        .card:hover { border-color: #39FF14; box-shadow: 0 0 15px rgba(57, 255, 20, 0.1); }
+        .roast-text { color: #FF3131; font-style: italic; }
+        .warning-border { border-color: #FF3131 !important; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="p-6 md:p-12 min-h-screen">
-    <div class="max-w-lg mx-auto">
-        <header class="mb-12 text-center">
-            <h1 class="text-xs st-accent font-semibold mb-2">FINANCIAL EXORCIST SYSTEM</h1>
-            <h2 class="text-4xl font-display tracking-tighter">訂閱退散 <span class="text-stRed">PRO</span></h2>
-            <div class="h-[1px] w-12 bg-stRed mx-auto mt-4"></div>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-md mx-auto">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">💸 訂閱退散</h1>
+            <p class="text-gray-500 text-sm">週期管理 x 扣款預警系統</p>
         </header>
 
-        <!-- 總計儀表板 -->
-        <div class="glass-card rounded-2xl p-8 mb-10 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-stRed to-transparent opacity-50"></div>
-            <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] mb-2 font-medium">Monthly Outflow / 每月支出</p>
-            <h3 id="total-cost" class="text-6xl font-light tracking-tighter mb-4">$ 0</h3>
-            <p id="roast-summary" class="text-xs text-gray-400 italic font-light tracking-wide"></p>
+        <!-- 總計看板 -->
+        <div class="card rounded-xl p-6 mb-8 text-center">
+            <p class="text-xs text-gray-400 uppercase tracking-widest">預估本月支出 (換算為月)</p>
+            <h2 id="total-cost" class="text-5xl font-bold my-2 text-white">$ 0</h2>
+            <p id="roast-summary" class="text-sm roast-text">正在掃描你的財務黑洞...</p>
         </div>
 
-        <!-- 輸入面板 -->
-        <div class="glass-card rounded-2xl p-6 mb-12">
-            <div class="grid grid-cols-1 gap-4">
-                <input id="sub-name" type="text" placeholder="服務名稱" class="w-full p-4 rounded-xl text-sm outline-none">
-                <div class="flex gap-4">
-                    <input id="sub-price" type="number" placeholder="金額 (TWD)" class="w-1/2 p-4 rounded-xl text-sm outline-none">
-                    <input id="sub-day" type="number" min="1" max="31" placeholder="扣款日" class="w-1/2 p-4 rounded-xl text-sm outline-none">
+        <!-- 輸入區 -->
+        <div class="card rounded-xl p-4 mb-8">
+            <h3 class="text-lg font-bold mb-4 text-white">➕ 增加新的供奉項目</h3>
+            <div class="space-y-3">
+                <input id="sub-name" type="text" placeholder="服務名稱 (如: Netflix)" class="w-full bg-black border border-gray-700 p-2 rounded focus:border-green-500 outline-none text-white">
+                
+                <div class="flex gap-2">
+                    <input id="sub-price" type="number" placeholder="金額" class="flex-1 bg-black border border-gray-700 p-2 rounded focus:border-green-500 outline-none text-white">
+                    <select id="sub-cycle" class="bg-black border border-gray-700 p-2 rounded text-white outline-none">
+                        <option value="1">每月</option>
+                        <option value="3">每季</option>
+                        <option value="12">每年</option>
+                    </select>
                 </div>
-                <button onclick="addSubscription()" class="btn-premium w-full py-4 rounded-xl font-bold text-sm text-white">
-                    CONFIRM SUBSCRIPTION
+
+                <div class="text-xs text-gray-500 mb-1 text-left">下次扣款日期：</div>
+                <input id="sub-date" type="date" class="w-full bg-black border border-gray-700 p-2 rounded focus:border-green-500 outline-none text-white">
+                
+                <button onclick="addSubscription()" class="w-full bg-green-600 hover:bg-green-500 text-black font-bold py-2 rounded mt-2 transition">
+                    確認加入盤子清單
                 </button>
             </div>
         </div>
 
-        <!-- 列表清單 -->
-        <div id="sub-list" class="space-y-6 pb-24"></div>
+        <!-- 列表區 -->
+        <div id="sub-list" class="space-y-4 pb-20"></div>
+    </div>
+
+    <!-- 預警彈窗 (Toast) -->
+    <div id="alert-modal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center p-6 z-50">
+        <div class="bg-red-900 border-2 border-red-500 p-6 rounded-2xl max-w-sm w-full text-center">
+            <h2 class="text-2xl font-bold text-white mb-4">⚠️ 奪命預警</h2>
+            <div id="alert-content" class="text-white mb-6 space-y-2 text-sm leading-relaxed"></div>
+            <button onclick="closeAlert()" class="bg-white text-red-900 font-bold py-2 px-8 rounded-full">我知道了 (哭)</button>
+        </div>
     </div>
 
     <script>
-        let subs = JSON.parse(localStorage.getItem('my_subscriptions_v2')) || [];
+        let subs = JSON.parse(localStorage.getItem('my_subscriptions')) || [];
+
+        const roasts = [
+            "這錢拿去買股不好嗎？非要送給大老闆抽雪茄。",
+            "你真的有在看嗎？還是只是在買『我跟得上時代』的幻覺？",
+            "這筆扣款是你離退休又遠了一步的證明。",
+            "別看了，你的錢包正在求救。",
+            "買這什麼東西？你的人生會因為這幾百塊變好嗎？"
+        ];
+
+        window.onload = () => {
+            checkWarnings();
+            render();
+        };
 
         function addSubscription() {
-            const name = document.getElementById('sub-name').value.trim();
+            const name = document.getElementById('sub-name').value;
             const price = parseFloat(document.getElementById('sub-price').value);
-            const day = parseInt(document.getElementById('sub-day').value);
+            const cycle = parseInt(document.getElementById('sub-cycle').value);
+            const date = document.getElementById('sub-date').value;
 
-            if (!name || isNaN(price) || isNaN(day) || day < 1 || day > 31) {
-                alert("資料輸入不完整或錯誤。"); return;
+            if (!name || isNaN(price) || !date) {
+                alert("日期跟金額填好！不要逃避現實！");
+                return;
             }
 
-            subs.push({ id: Date.now(), name, price, day, active: true });
+            const roast = roasts[Math.floor(Math.random() * roasts.length)];
+            subs.push({ id: Date.now(), name, price, cycle, date, roast });
             saveAndRender();
-            document.querySelectorAll('input').forEach(i => i.value = '');
-        }
-
-        function toggleStatus(id) {
-            const sub = subs.find(s => s.id === id);
-            sub.active = !sub.active;
-            saveAndRender();
-        }
-
-        function removeSub(id) {
-            if(confirm("確定刪除此項監控？")) {
-                subs = subs.filter(s => s.id !== id);
-                saveAndRender();
-            }
+            
+            // 清空
+            document.getElementById('sub-name').value = '';
+            document.getElementById('sub-price').value = '';
         }
 
         function saveAndRender() {
-            localStorage.setItem('my_subscriptions_v2', JSON.stringify(subs));
+            localStorage.setItem('my_subscriptions', JSON.stringify(subs));
             render();
         }
 
-        function getDaysUntil(payDay) {
-            const now = new Date();
-            const today = now.getDate();
-            const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const targetDay = Math.min(payDay, lastDayOfMonth);
-            return today <= targetDay ? targetDay - today : (lastDayOfMonth - today) + targetDay;
+        function checkWarnings() {
+            const today = new Date();
+            const threeDaysLater = new Date();
+            threeDaysLater.setDate(today.getDate() + 3);
+
+            let warningItems = subs.filter(sub => {
+                const subDate = new Date(sub.date);
+                return subDate >= today && subDate <= threeDaysLater;
+            });
+
+            if (warningItems.length > 0) {
+                const modal = document.getElementById('alert-modal');
+                const content = document.getElementById('alert-content');
+                modal.classList.remove('hidden');
+                
+                let html = "以下項目 <b>3天內</b> 就要扣款了：<br><br>";
+                warningItems.forEach(item => {
+                    html += `❌ <b>${item.name}</b> ($${item.price})<br>`;
+                });
+                html += "<br>現在去取消還來得及，別說我沒提醒你！";
+                content.innerHTML = html;
+            }
+        }
+
+        function closeAlert() {
+            document.getElementById('alert-modal').classList.add('hidden');
+        }
+
+        function removeSub(id) {
+            if(confirm("真的要砍掉這個項目嗎？")) {
+                subs = subs.filter(s => s.id !== id);
+                saveAndRender();
+            }
         }
 
         function render() {
             const listEl = document.getElementById('sub-list');
             const totalEl = document.getElementById('total-cost');
             const summaryEl = document.getElementById('roast-summary');
-            listEl.innerHTML = ''; let total = 0;
+            
+            listEl.innerHTML = '';
+            let monthlyTotal = 0;
 
-            subs.sort((a, b) => getDaysUntil(a.day) - getDaysUntil(b.day)).forEach(sub => {
-                if (sub.active) total += sub.price;
-                const daysLeft = getDaysUntil(sub.day);
-                const progress = ((30 - daysLeft) / 30) * 100;
-                const isSoon = daysLeft <= 3;
+            // 排序：日期近的在前面
+            subs.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            subs.forEach(sub => {
+                // 換算月費
+                monthlyTotal += (sub.price / sub.cycle);
+                
+                const cycleText = sub.cycle === 1 ? "每月" : (sub.cycle === 3 ? "每季" : "每年");
+                const isUrgent = (new Date(sub.date) - new Date()) / (1000*60*60*24) <= 3;
 
                 listEl.innerHTML += `
-                    <div class="relative group">
-                        <div class="glass-card rounded-2xl p-6 transition-all duration-500 ${sub.active ? 'border-l-4 border-l-stRed' : 'opacity-40 grayscale'}">
-                            <div class="flex justify-between items-start mb-4">
-                                <div>
-                                    <h4 class="text-lg font-semibold text-white tracking-tight">${sub.name}</h4>
-                                    <p class="text-[10px] ${isSoon ? 'text-stRed font-bold' : 'text-gray-500'} uppercase tracking-widest mt-1">
-                                        ${sub.active ? `Next Charge: In ${daysLeft} Days` : 'Subscription Paused'}
-                                    </p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-2xl font-light tracking-tighter">$${sub.price.toLocaleString()}</span>
-                                </div>
+                    <div class="card rounded-xl p-4 relative ${isUrgent ? 'warning-border' : ''}">
+                        <button onclick="removeSub(${sub.id})" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-sm">✕</button>
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-white font-bold text-lg">${sub.name}</span>
+                                <span class="ml-2 text-[10px] bg-gray-800 px-2 py-0.5 rounded text-gray-400">${cycleText}</span>
                             </div>
-                            
-                            <div class="progress-bg mb-4">
-                                <div class="progress-fill" style="width: ${sub.active ? progress : 0}%"></div>
-                            </div>
-
-                            <div class="flex justify-between items-center">
-                                <button onclick="toggleStatus(${sub.id})" class="text-[10px] text-gray-400 hover:text-white transition tracking-widest uppercase">
-                                    [ ${sub.active ? 'Disable' : 'Enable'} ]
-                                </button>
-                                <button onclick="removeSub(${sub.id})" class="text-[10px] text-gray-600 hover:text-stRed transition uppercase">Remove</button>
+                            <div class="text-right">
+                                <div class="text-xl font-mono">$${sub.price}</div>
+                                <div class="text-[10px] text-gray-500">下次：${sub.date}</div>
                             </div>
                         </div>
-                    </div>`;
+                        <p class="text-xs roast-text mt-2 border-t border-gray-900 pt-2">💬 ${sub.roast}</p>
+                    </div>
+                `;
             });
 
-            totalEl.innerText = `$ ${total.toLocaleString()}`;
-            summaryEl.innerText = total > 2000 ? "DETECTED: SEVERE WALLET HEMORRHAGE." : "STATUS: NORMAL FINANCE LEVELS.";
+            totalEl.innerText = `$ ${Math.round(monthlyTotal).toLocaleString()}`;
+            summaryEl.innerText = monthlyTotal > 2000 ? "你的錢包正在大噴血，這金額夠買好幾股台積電了！" : "目前的失血量還在控制範圍內。";
         }
-        render();
     </script>
 </body>
 </html>
