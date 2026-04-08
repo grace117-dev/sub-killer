@@ -1,0 +1,21 @@
+name: Create Issue with Write Access
+
+on:
+  workflow_dispatch
+
+jobs:
+  create_issue_job:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # 授予寫入 Issue 的權限
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+
+      - name: Create a test issue
+        run: |
+          gh issue create --repo grace117-dev/sub-killer --title "Automated Test Issue from Manus" --body "This issue was created by Manus to test GitHub Actions write permissions using MY_GITHUB_TOKEN." --label "bug"
+        env:
+          GH_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
